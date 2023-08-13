@@ -8,6 +8,9 @@ models/
 .chroma/
 db/
 
+# Prevent leakage of documents
+source_documents/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
