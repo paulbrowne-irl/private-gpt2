@@ -6,7 +6,9 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.vectorstores import Chroma
 from langchain.llms import GPT4All, LlamaCpp
 import os
+import sys
 import argparse
+import logging
 import time
 
 load_dotenv()
@@ -23,13 +25,16 @@ target_source_chunks = int(os.environ.get('TARGET_SOURCE_CHUNKS',4))
 from constants import CHROMA_SETTINGS
 
 def main():
+    
     # Parse the command line arguments
     args = parse_arguments()
     embeddings = HuggingFaceEmbeddings(model_name=embeddings_model_name)
     db = Chroma(persist_directory=persist_directory, embedding_function=embeddings, client_settings=CHROMA_SETTINGS)
     retriever = db.as_retriever(search_kwargs={"k": target_source_chunks})
+
     # activate/deactivate the streaming StdOut callback for LLMs
     callbacks = [] if args.mute_stream else [StreamingStdOutCallbackHandler()]
+
     # Prepare the LLM
     match model_type:
         case "LlamaCpp":
@@ -56,15 +61,15 @@ def main():
         end = time.time()
 
         # Print the result
-        print("\n\n> Question:")
-        print(query)
-        print(f"\n> Answer (took {round(end - start, 2)} s.):")
-        print(answer)
+        logging.info("\n\n> Question:")
+        logging.info(query)
+        logging.info(f"\n> Answer (took {round(end - start, 2)} s.):")
+        logging.info(answer)
 
         # Print the relevant sources used for the answer
         for document in docs:
-            print("\n> " + document.metadata["source"] + ":")
-            print(document.page_content)
+            logging.info("\n> " + document.metadata["source"] + ":")
+            logging.info(document.page_content)
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='privateGPT: Ask questions to your documents without an internet connection, '
@@ -80,4 +85,13 @@ def parse_arguments():
 
 
 if __name__ == "__main__":
+
+    logging.basicConfig(
+    level=logging.INFO,
+    format="%(message)s",
+    handlers=[
+        logging.FileHandler("privateGPT.log"),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
     main()

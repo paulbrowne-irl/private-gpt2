@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import os
 import glob
+import logging
+import sys
 from typing import List
 from dotenv import load_dotenv
 from multiprocessing import Pool
@@ -26,9 +28,8 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.docstore.document import Document
 from constants import CHROMA_SETTINGS
 
-
+# Load environment
 load_dotenv()
-
 
 # Load environment variables
 persist_directory = os.environ.get('PERSIST_DIRECTORY')
@@ -36,6 +37,8 @@ source_directory = os.environ.get('SOURCE_DIRECTORY', 'source_documents')
 embeddings_model_name = os.environ.get('EMBEDDINGS_MODEL_NAME')
 chunk_size = 500
 chunk_overlap = 50
+
+#set up logging
 
 
 # Custom document loaders
@@ -114,15 +117,15 @@ def process_documents(ignored_files: List[str] = []) -> List[Document]:
     """
     Load documents and split in chunks
     """
-    print(f"Loading documents from {source_directory}")
+    logging.info(f"Loading documents from {source_directory}")
     documents = load_documents(source_directory, ignored_files)
     if not documents:
-        print("No new documents to load")
+        logging.info("No new documents to load")
         exit(0)
-    print(f"Loaded {len(documents)} new documents from {source_directory}")
+    logging.info(f"Loaded {len(documents)} new documents from {source_directory}")
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     texts = text_splitter.split_documents(documents)
-    print(f"Split into {len(texts)} chunks of text (max. {chunk_size} tokens each)")
+    logging.info(f"Split into {len(texts)} chunks of text (max. {chunk_size} tokens each)")
     return texts
 
 def does_vectorstore_exist(persist_directory: str) -> bool:
@@ -144,23 +147,33 @@ def main():
 
     if does_vectorstore_exist(persist_directory):
         # Update and store locally vectorstore
-        print(f"Appending to existing vectorstore at {persist_directory}")
+        logging.info(f"Appending to existing vectorstore at {persist_directory}")
         db = Chroma(persist_directory=persist_directory, embedding_function=embeddings, client_settings=CHROMA_SETTINGS)
         collection = db.get()
         texts = process_documents([metadata['source'] for metadata in collection['metadatas']])
-        print(f"Creating embeddings. May take some minutes...")
+        logging.info(f"Creating embeddings. May take some minutes...")
         db.add_documents(texts)
     else:
         # Create and store locally vectorstore
-        print("Creating new vectorstore")
+        logging.info("Creating new vectorstore")
         texts = process_documents()
-        print(f"Creating database and embeddings. May take some minutes...")
+        logging.info(f"Creating database and embeddings. May take some minutes...")
         db = Chroma.from_documents(texts, embeddings, persist_directory=persist_directory, client_settings=CHROMA_SETTINGS)
     db.persist()
     db = None
 
-    print(f"Ingestion complete! You can now run privateGPT.py to query your documents")
+    logging.info(f"Ingestion complete! You can now run privateGPT.py to query your documents")
 
 
 if __name__ == "__main__":
+
+    logging.basicConfig(
+    level=logging.INFO,
+    format="%(message)s",
+    handlers=[
+        logging.FileHandler("ingest.log"),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+
     main()
