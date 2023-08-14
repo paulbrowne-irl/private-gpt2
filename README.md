@@ -5,21 +5,18 @@ Built with [LangChain](https://github.com/hwchase17/langchain), [GPT4All](https:
 
 <img width="902" alt="demo" src="https://user-images.githubusercontent.com/721666/236942256-985801c9-25b9-48ef-80be-3acbb4575164.png">
 
+# Notes on modifications
+
+1. Containerisation ...
+1. logging ..
+1. (todo) prompts
+
+
 # Environment Setup
 In order to set your environment up to run the code here, first install all requirements:
 
 ```shell
 pip3 install -r requirements.txt
-```
-
-*Alternative requirements installation with poetry*
-1. Install [poetry](https://python-poetry.org/docs/#installation)
-
-2. Run this commands
-```shell
-cd privateGPT
-poetry install
-poetry shell
 ```
 
 Then, download the LLM model and place it in a directory of your choice:

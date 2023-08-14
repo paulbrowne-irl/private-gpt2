@@ -24,7 +24,7 @@ target_source_chunks = int(os.environ.get('TARGET_SOURCE_CHUNKS',4))
 
 from constants import CHROMA_SETTINGS
 
-def main():
+def main(questions=[]):
     
     # Parse the command line arguments
     args = parse_arguments()
@@ -46,13 +46,13 @@ def main():
             raise Exception(f"Model type {model_type} is not supported. Please choose one of the following: LlamaCpp, GPT4All")
         
     qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=retriever, return_source_documents= not args.hide_source)
-    # Interactive questions and answers
-    while True:
-        query = input("\nEnter a query: ")
-        if query == "exit":
-            break
-        if query.strip() == "":
-            continue
+    
+    # Non-Interactive questions and answers
+    for query in questions:
+
+        # print the question
+        logging.info("\n\n> Question:"+query)
+
 
         # Get the answer from the chain
         start = time.time()
@@ -61,8 +61,8 @@ def main():
         end = time.time()
 
         # Print the result
-        logging.info("\n\n> Question:")
-        logging.info(query)
+        
+        
         logging.info(f"\n> Answer (took {round(end - start, 2)} s.):")
         logging.info(answer)
 
@@ -86,6 +86,7 @@ def parse_arguments():
 
 if __name__ == "__main__":
 
+    #setup logging
     logging.basicConfig(
     level=logging.INFO,
     format="%(message)s",
@@ -93,5 +94,11 @@ if __name__ == "__main__":
         logging.FileHandler("privateGPT.log"),
         logging.StreamHandler(sys.stdout)
     ]
-)
-    main()
+    )
+
+    #setup questions we want to ask
+    questions =["Question 1",
+                "Question 2"]
+
+
+    main(questions)
