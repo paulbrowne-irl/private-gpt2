@@ -20,8 +20,7 @@ from langchain.document_loaders import (
     UnstructuredODTLoader,
     UnstructuredPowerPointLoader,
     UnstructuredWordDocumentLoader,
-    Docx2txtLoader,
-    MyElmLoader
+    Docx2txtLoader
 
 )
 
@@ -40,29 +39,12 @@ source_directory = os.environ.get('SOURCE_DIRECTORY', 'source_documents')
 embeddings_model_name = os.environ.get('EMBEDDINGS_MODEL_NAME')
 chunk_size = 500
 chunk_overlap = 50
-max_number_of_files_per_run=25
+max_number_of_files_per_run=250
 
-# Map file extensions to document loaders and their arguments
-LOADER_MAPPING = {
-    ".csv": (CSVLoader, {}),
-     ".docx": (Docx2txtLoader, {}),
-    ".doc": (UnstructuredWordDocumentLoader, {}),
-    ".docx": (UnstructuredWordDocumentLoader, {}),
-    ".enex": (EverNoteLoader, {}),
-    ".eml": (MyElmLoader, {}),
-    ".epub": (UnstructuredEPubLoader, {}),
-    ".html": (UnstructuredHTMLLoader, {}),
-    ".md": (UnstructuredMarkdownLoader, {}),
-    ".odt": (UnstructuredODTLoader, {}),
-    ".pdf": (PyMuPDFLoader, {}),
-    ".ppt": (UnstructuredPowerPointLoader, {}),
-    ".pptx": (UnstructuredPowerPointLoader, {}),
-    ".txt": (TextLoader, {"encoding": "utf8"}),
-    # Add more mappings for other file extensions and loaders as needed
-}
 
 
 # Custom document loaders
+# as a class definition needs to be before the mapping file
 class MyElmLoader(UnstructuredEmailLoader):
     """Wrapper to fallback to text/plain when default does not work"""
 
@@ -85,6 +67,24 @@ class MyElmLoader(UnstructuredEmailLoader):
         return doc
 
 
+# Map file extensions to document loaders and their arguments
+LOADER_MAPPING = {
+    ".csv": (CSVLoader, {}),
+     ".docx": (Docx2txtLoader, {}),
+    ".doc": (UnstructuredWordDocumentLoader, {}),
+    ".docx": (UnstructuredWordDocumentLoader, {}),
+    ".enex": (EverNoteLoader, {}),
+    #".eml": (MyElmLoader, {}),
+    ".epub": (UnstructuredEPubLoader, {}),
+    ".html": (UnstructuredHTMLLoader, {}),
+    ".md": (UnstructuredMarkdownLoader, {}),
+    ".odt": (UnstructuredODTLoader, {}),
+    ".pdf": (PyMuPDFLoader, {}),
+    ".ppt": (UnstructuredPowerPointLoader, {}),
+    ".pptx": (UnstructuredPowerPointLoader, {}),
+    ".txt": (TextLoader, {"encoding": "utf8"}),
+    # Add more mappings for other file extensions and loaders as needed
+}
 
 
 
@@ -97,6 +97,10 @@ def load_single_document(file_path: str) -> List[Document]:
 
     raise ValueError(f"Unsupported file extension '{ext}'")
 
+
+
+
+
 def load_documents(source_dir: str, ignored_files: List[str] = []) -> List[Document]:
     """
     Loads all documents from the source documents directory, ignoring specified files
@@ -106,16 +110,29 @@ def load_documents(source_dir: str, ignored_files: List[str] = []) -> List[Docum
         all_files.extend(
             glob.glob(os.path.join(source_dir, f"**/*{ext}"), recursive=True)
         )
+
+    # gather all files on this path as long as it is not on our list    
     filtered_files = [file_path for file_path in all_files if file_path not in ignored_files]
 
+    #Multithread loading
     with Pool(processes=os.cpu_count()) as pool:
+
         results = []
+
+        #loop while updating progress bar
         with tqdm(total=len(filtered_files), desc='Loading new documents', ncols=80) as pbar:
             for i, docs in enumerate(pool.imap_unordered(load_single_document, filtered_files)):
+                
+                #capture the loaded docs
                 results.extend(docs)
+
+                #update the progress bar
                 pbar.update()
 
     return results
+
+
+
 
 def process_documents(ignored_files: List[str] = []) -> List[Document]:
     """
@@ -123,14 +140,25 @@ def process_documents(ignored_files: List[str] = []) -> List[Document]:
     """
     logging.info(f"Loading documents from {source_directory}")
     documents = load_documents(source_directory, ignored_files)
+
     if not documents:
         logging.info("No new documents to load")
         exit(0)
-    logging.info(f"Loaded {len(documents)} new documents from {source_directory}")
+
+    logging.info(f"Found {len(documents)} new documents from {source_directory}")
+    if(len(documents)>max_number_of_files_per_run):
+         logging.info(f"truncating document list to max number of files per run: {max_number_of_files_per_run}")
+         documents = documents[0:max_number_of_files_per_run]
+
+    #Split the documents
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     texts = text_splitter.split_documents(documents)
     logging.info(f"Split into {len(texts)} chunks of text (max. {chunk_size} tokens each)")
+
     return texts
+
+
+
 
 def does_vectorstore_exist(persist_directory: str) -> bool:
     """
@@ -140,10 +168,15 @@ def does_vectorstore_exist(persist_directory: str) -> bool:
         if os.path.exists(os.path.join(persist_directory, 'chroma-collections.parquet')) and os.path.exists(os.path.join(persist_directory, 'chroma-embeddings.parquet')):
             list_index_files = glob.glob(os.path.join(persist_directory, 'index/*.bin'))
             list_index_files += glob.glob(os.path.join(persist_directory, 'index/*.pkl'))
+
             # At least 3 documents are needed in a working vectorstore
             if len(list_index_files) > 3:
                 return True
     return False
+
+
+
+
 
 def main():
 
@@ -169,6 +202,9 @@ def main():
     db = None
 
     logging.info(f"Ingestion complete! You can now run privateGPT.py to query your documents")
+
+
+
 
 
 if __name__ == "__main__":
