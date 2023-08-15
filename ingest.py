@@ -39,12 +39,12 @@ source_directory = os.environ.get('SOURCE_DIRECTORY', 'source_documents')
 embeddings_model_name = os.environ.get('EMBEDDINGS_MODEL_NAME')
 chunk_size = 500
 chunk_overlap = 50
-max_number_of_files_per_run=250
+max_number_of_parts_per_run=5000 # adjust based on performance of laptop - 
 
 
 
 # Custom document loaders
-# as a class definition needs to be before the mapping file
+# as a class definition needs to be before the mapping file definition
 class MyElmLoader(UnstructuredEmailLoader):
     """Wrapper to fallback to text/plain when default does not work"""
 
@@ -74,7 +74,7 @@ LOADER_MAPPING = {
     ".doc": (UnstructuredWordDocumentLoader, {}),
     ".docx": (UnstructuredWordDocumentLoader, {}),
     ".enex": (EverNoteLoader, {}),
-    #".eml": (MyElmLoader, {}),
+    ".eml": (MyElmLoader, {}),
     ".epub": (UnstructuredEPubLoader, {}),
     ".html": (UnstructuredHTMLLoader, {}),
     ".md": (UnstructuredMarkdownLoader, {}),
@@ -89,8 +89,12 @@ LOADER_MAPPING = {
 
 
 def load_single_document(file_path: str) -> List[Document]:
+    '''Load a single document from a given file path using the predefined loader list'''
+
     ext = "." + file_path.rsplit(".", 1)[-1]
     if ext in LOADER_MAPPING:
+
+        #load the appropriate class and execute it's load method
         loader_class, loader_args = LOADER_MAPPING[ext]
         loader = loader_class(file_path, **loader_args)
         return loader.load()
@@ -121,6 +125,8 @@ def load_documents(source_dir: str, ignored_files: List[str] = []) -> List[Docum
 
         #loop while updating progress bar
         with tqdm(total=len(filtered_files), desc='Loading new documents', ncols=80) as pbar:
+
+            #load_single_document (defined above) is passed into this loop as a lambda function
             for i, docs in enumerate(pool.imap_unordered(load_single_document, filtered_files)):
                 
                 #capture the loaded docs
@@ -145,10 +151,12 @@ def process_documents(ignored_files: List[str] = []) -> List[Document]:
         logging.info("No new documents to load")
         exit(0)
 
-    logging.info(f"Found {len(documents)} new documents from {source_directory}")
-    if(len(documents)>max_number_of_files_per_run):
-         logging.info(f"truncating document list to max number of files per run: {max_number_of_files_per_run}")
-         documents = documents[0:max_number_of_files_per_run]
+    #process can fail on laptop if we try to ingest too many documents/chunks at a time
+    logging.info(f"Found {len(documents)} new document parts from {source_directory}")
+
+    if(len(documents)>max_number_of_parts_per_run):
+         logging.info(f"truncating document list to max number of files per run: {max_number_of_parts_per_run}")
+         documents = documents[0:max_number_of_parts_per_run]
 
     #Split the documents
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
@@ -172,6 +180,7 @@ def does_vectorstore_exist(persist_directory: str) -> bool:
             # At least 3 documents are needed in a working vectorstore
             if len(list_index_files) > 3:
                 return True
+    #default        
     return False
 
 
@@ -192,12 +201,15 @@ def main():
         texts = process_documents([metadata['source'] for metadata in collection['metadatas']])
         logging.info(f"Creating embeddings. May take some minutes...")
         db.add_documents(texts)
+
     else:
         # Create and store locally vectorstore
         logging.info("Creating new vectorstore")
         texts = process_documents()
         logging.info(f"Creating database and embeddings. May take some minutes...")
         db = Chroma.from_documents(texts, embeddings, persist_directory=persist_directory, client_settings=CHROMA_SETTINGS)
+
+    # persist our vector store and release connnection    
     db.persist()
     db = None
 

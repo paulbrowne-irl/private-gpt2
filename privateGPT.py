@@ -28,6 +28,8 @@ def main(questions=[]):
     
     # Parse the command line arguments
     args = parse_arguments()
+
+    # load embeddings db connection using this and environmental settings
     embeddings = HuggingFaceEmbeddings(model_name=embeddings_model_name)
     db = Chroma(persist_directory=persist_directory, embedding_function=embeddings, client_settings=CHROMA_SETTINGS)
     retriever = db.as_retriever(search_kwargs={"k": target_source_chunks})
@@ -39,12 +41,16 @@ def main(questions=[]):
     match model_type:
         case "LlamaCpp":
             llm = LlamaCpp(model_path=model_path, max_tokens=model_n_ctx, n_batch=model_n_batch, callbacks=callbacks, verbose=False)
+        
         case "GPT4All":
+            # currently this is the default model
             llm = GPT4All(model=model_path, max_tokens=model_n_ctx, backend='gptj', n_batch=model_n_batch, callbacks=callbacks, verbose=False)
+
         case _default:
             # raise exception if model_type is not supported
             raise Exception(f"Model type {model_type} is not supported. Please choose one of the following: LlamaCpp, GPT4All")
-        
+
+    #retrieve an handle to the interfacr from the choosen model, passing in link to our vector DB    
     qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=retriever, return_source_documents= not args.hide_source)
     
     # Non-Interactive questions and answers
@@ -52,7 +58,6 @@ def main(questions=[]):
 
         # print the question
         logging.info("\n\n> Question:"+query)
-
 
         # Get the answer from the chain
         start = time.time()
@@ -97,8 +102,11 @@ if __name__ == "__main__":
     )
 
     #setup questions we want to ask
-    questions =["Question 1",
-                "Question 2"]
+    questions =[
+                "How many people will work in your company in 2023",
+                "Which markets have suffered the worst due to covid",
+                "which products will be you be selling more of next year"
+                ]
 
 
     main(questions)
