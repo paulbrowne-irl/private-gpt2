@@ -155,7 +155,7 @@ def process_documents(ignored_files: List[str] = []) -> List[Document]:
     logging.info(f"Found {len(documents)} new document parts from {source_directory}")
 
     if(len(documents)>max_number_of_parts_per_run):
-         logging.info(f"truncating document list to max number of files per run: {max_number_of_parts_per_run}")
+         logging.info(f"truncating document list to max number of file parts per run: {max_number_of_parts_per_run}")
          documents = documents[0:max_number_of_parts_per_run]
 
     #Split the documents
