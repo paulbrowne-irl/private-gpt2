@@ -20,6 +20,9 @@ from langchain.document_loaders import (
     UnstructuredODTLoader,
     UnstructuredPowerPointLoader,
     UnstructuredWordDocumentLoader,
+    Docx2txtLoader,
+    MyElmLoader
+
 )
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -42,7 +45,7 @@ max_number_of_files_per_run=25
 # Map file extensions to document loaders and their arguments
 LOADER_MAPPING = {
     ".csv": (CSVLoader, {}),
-    # ".docx": (Docx2txtLoader, {}),
+     ".docx": (Docx2txtLoader, {}),
     ".doc": (UnstructuredWordDocumentLoader, {}),
     ".docx": (UnstructuredWordDocumentLoader, {}),
     ".enex": (EverNoteLoader, {}),
