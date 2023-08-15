@@ -10,6 +10,7 @@ Built with [LangChain](https://github.com/hwchase17/langchain), [GPT4All](https:
 1. Containerisation ...
 1. logging ..
 1. (todo) prompts
+1. link to previous builod image
 
 
 # Environment Setup
@@ -17,6 +18,7 @@ In order to set your environment up to run the code here, first install all requ
 
 ```shell
 pip3 install -r requirements.txt
+pip install sentence_transformers
 ```
 
 Then, download the LLM model and place it in a directory of your choice:
