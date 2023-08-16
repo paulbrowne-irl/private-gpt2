@@ -103,12 +103,19 @@ if __name__ == "__main__":
 
     #setup questions we want to ask
     questions =[
-                # "How many people will work in your company in 2023",
-                "Which markets have suffered the worst due to covid",
-                "which products will be you be selling more of next year",
-                "which Eurozone market is your priority",
-                "what business strategy should Irish companies follow",
-                "write an email to the CEO setting out the challenges in the economy"
+                "Will more people have jobs next year?",
+                "Which markets have suffered the worst due to covid?",
+                "which products will be more in demand next year?",
+                "which Eurozone market (France, Germany, Belgium or Netherlands) is your priority?",
+                "what business strategy should Irish companies follow?",
+                "write an email to the CEO setting out the challenges in the economy",
+                "Summarize the business strategy of a small company in 3 sentences in a recession",
+                "what challenges are facing the economy",
+                "Has Covid had an impact on your business",
+                "Should a company take out a bank loan or equity",
+                "List all the costs for your company for the next two years",
+                "Write an email to a client explaining why a Venture Capital fund is now able to invest in their company",
+                "write a business plan for a startup with a new AI Product looking to export to the US"
                 ]
 
 
