@@ -39,7 +39,7 @@ source_directory = os.environ.get('SOURCE_DIRECTORY', 'source_documents')
 embeddings_model_name = os.environ.get('EMBEDDINGS_MODEL_NAME')
 chunk_size = 500
 chunk_overlap = 50
-max_number_of_parts_per_run=5000 # adjust based on performance of laptop - 
+max_number_of_parts_per_run=5100 # adjust based on performance of laptop - 
 
 
 
@@ -186,7 +186,6 @@ def does_vectorstore_exist(persist_directory: str) -> bool:
 
 
 
-
 def main():
 
 
@@ -194,14 +193,17 @@ def main():
     embeddings = HuggingFaceEmbeddings(model_name=embeddings_model_name)
 
     if does_vectorstore_exist(persist_directory):
+
         # Update and store locally vectorstore
         logging.info(f"Appending to existing vectorstore at {persist_directory}")
         db = Chroma(persist_directory=persist_directory, embedding_function=embeddings, client_settings=CHROMA_SETTINGS)
         collection = db.get()
         texts = process_documents([metadata['source'] for metadata in collection['metadatas']])
-        logging.info(f"Creating embeddings. May take some minutes...")
-        db.add_documents(texts)
-
+        if(len(texts)>0):
+            logging.info(f"Creating embeddings. May take some minutes...")
+            db.add_documents(texts)
+        else:
+            logging.info(f"No new documents embeddings found")
     else:
         # Create and store locally vectorstore
         logging.info("Creating new vectorstore")

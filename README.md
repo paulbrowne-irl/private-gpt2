@@ -17,17 +17,19 @@ Built with [LangChain](https://github.com/hwchase17/langchain), [GPT4All](https:
 # Environment Setup
 In order to set your environment up to run the code here, first install all requirements:
 
-```shell
-pip3 install -r requirements.txt
-```
-
-Then, download the LLM model and place it in a directory of your choice:
+Download the LLM model and place it in a directory of your choice:
 - LLM: default to [ggml-gpt4all-j-v1.3-groovy.bin](https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin). If you prefer a different GPT4All-J compatible model, just download it and reference it in your `.env` file.
 
 Copy the `example.env` template into `.env`
 ```shell
 cp example.env .env
 ```
+
+```shell
+pip3 install -r requirements.txt
+```
+
+
 
 and edit the variables appropriately in the `.env` file.
 ```
@@ -90,6 +92,8 @@ You can ingest as many documents as you want, and all will be accumulated in the
 If you want to start from an empty database, delete the `db` folder.
 
 Note: during the ingest process no data leaves your local environment. You could ingest without an internet connection, except for the first time you run the ingest script, when the embeddings model is downloaded.
+
+Note: The number of document (chunks) processed during each run is limited to allow for reduced memory. You may need to run the ingest script several times for all your documents to be ingested. Previously ingested documents are ignored during subsequent runs. Search for max_number_of_parts_per_run in the ingest.py script to change this limit.
 
 ## Ask questions to your documents, locally!
 In order to ask a question, run a command like:
