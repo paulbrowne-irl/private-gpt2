@@ -102,21 +102,26 @@ if __name__ == "__main__":
     )
 
     #setup questions we want to ask
+    
     questions =[
-                "Will more people have jobs next year?",
-                "Which markets have suffered the worst due to covid?",
-                "which products will be more in demand next year?",
-                "which Eurozone market (France, Germany, Belgium or Netherlands) is your priority?",
-                "what business strategy should Irish companies follow?",
+                "write a 1 page letter asking a company to repay their grant (SEF or Sustaining Enterprise Fund)",#+
+                "Will more people have jobs in 2024 after the pandemic is finished?", #+
+                "A website to attract new graduates to work in your small company",
+                "Which Life Science markets have suffered the worst due to covid?", #?
+                "which products will be more in demand in 2022?", #OK
+                "which Eurozone country (France, Germany, Belgium or Netherlands) should i choose to invest in and give me 3 reasons for picking each?",#?
+                "what business strategy should Irish companies follow?", #+
                 "write an email to the CEO setting out the challenges in the economy",
                 "Summarize the business strategy of a small company in 3 sentences in a recession",
                 "what challenges are facing the economy",
-                "Has Covid had an impact on your business",
                 "Should a company take out a bank loan or equity",
-                "List all the costs for your company for the next two years",
+                "List all the typical costs for an engineering company for the next two years",
                 "Write an email to a client explaining why a Venture Capital fund is now able to invest in their company",
-                "write a business plan for a startup with a new AI Product looking to export to the US"
+                "write a business plan for a startup with a new AI Product for self driving cars looking to export to the US",
+                "A poem, why being an accountant is the best job in the wold",
+                "Describe how government policy should support companies making the green transition"
                 ]
 
+    #questions=[""]
 
     main(questions)

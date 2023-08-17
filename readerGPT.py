@@ -1,15 +1,10 @@
 # because prompt generation can be slow, we have a reader to "playback" logs
 
-# TODO
-# Random time delay
-# extra delay after seconds
-# print by words
-
 
 import time
 from termcolor import colored, cprint
 
-# Constancts
+# contants
 line_delay = 0.01 # in seconds
 line_question ="> Question"
 line_answer="> Answer"
