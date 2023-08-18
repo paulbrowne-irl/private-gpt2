@@ -65,9 +65,7 @@ def main(questions=[]):
         answer, docs = res['result'], [] if args.hide_source else res['source_documents']
         end = time.time()
 
-        # Print the result
-        
-        
+        # Print the Answer
         logging.info(f"\n> Answer (took {round(end - start, 2)} s.):")
         logging.info(answer)
 
