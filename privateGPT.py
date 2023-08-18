@@ -107,10 +107,10 @@ if __name__ == "__main__":
                 "write a 1 page letter asking a company to repay their grant (SEF or Sustaining Enterprise Fund)",#+
                 "Will more people have jobs in 2024 after the pandemic is finished?", #+
                 "A website to attract new graduates to work in your small company",
-                "Which Life Science markets have suffered the worst due to covid?", #?
+                "Which Life Sciences still be an attractive place to work after the covid pandemic?", #?
                 "which products will be more in demand in 2022?", #OK
-                "which Eurozone country (France, Germany, Belgium or Netherlands) should i choose to invest in and give me 3 reasons for picking each?",#?
-                "what business strategy should Irish companies follow?", #+
+                "which Eurozone country (France, Germany, Belgium or Netherlands) is the most popular?",#?
+                "Give me a summary marketing plan to an small Irish company looking to export for the first time", #+
                 "write an email to the CEO setting out the challenges in the economy",
                 "Summarize the business strategy of a small company in 3 sentences in a recession",
                 "what challenges are facing the economy",
