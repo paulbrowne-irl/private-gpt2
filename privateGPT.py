@@ -5,6 +5,8 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.vectorstores import Chroma
 from langchain.llms import GPT4All, LlamaCpp
+from constants import CHROMA_SETTINGS
+
 import os
 import sys
 import argparse
@@ -22,7 +24,6 @@ model_n_ctx = os.environ.get('MODEL_N_CTX')
 model_n_batch = int(os.environ.get('MODEL_N_BATCH',8))
 target_source_chunks = int(os.environ.get('TARGET_SOURCE_CHUNKS',4))
 
-from constants import CHROMA_SETTINGS
 
 def main(questions=[]):
     
