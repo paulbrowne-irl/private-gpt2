@@ -1,4 +1,5 @@
-# visualise the document  network 
+# visualise the document network 
+# draws on example from https://github.com/mtybadger/chromaviz
 
 import os
 from langchain.vectorstores import Chroma

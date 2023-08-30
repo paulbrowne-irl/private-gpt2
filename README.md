@@ -5,13 +5,17 @@ Built with [LangChain](https://github.com/hwchase17/langchain), [GPT4All](https:
 
 <img width="902" alt="demo" src="https://user-images.githubusercontent.com/721666/236942256-985801c9-25b9-48ef-80be-3acbb4575164.png">
 
-# Notes on modifications to [Base Project](https://github.com/imartinez/privateGPT)
+# Notes on modifications to [Original Project](https://github.com/imartinez/privateGPT)
 
-1. Containerisation ...
-1. logging ..
-1. (todo) prompts
-1. link to previous builod image
-1. updated requirements
+The Base Project contains much of the functionality, but struggles to run on even a moderately powerful Laptop (16GB Memory). For many use cases confidentiality of information is key - documents cannot be passed to the ChatGPT online, or the cloud. The following changes were made to allow a proof of concept ingesting **your** documents securely on **your** local computer.
+
+1. **Containerisation** not required to run the Project, but makes it at lot easier to setup and move between machines (e.g. avoids Python Library version conflicts). The project now contains a *.devcontainer* file the VSCode editor can use to spin up the appropriate Dev container on your machine. To use you will need Docker Desktop running and VSCode will prompt you if you wish to open the project in a container.
+1. Updated **requirements.txt** as some needed Python libraries were missing. Referenced this file in containers (e.g. VSCode will auto install needed libraries if you use that tool).
+1. **Batch ingestation** Sharding the documents (for later search) is very memory intensive. *ingest.py* has been modified to only process *X* documents per run (value set in *max_number_of_parts_per_run* in this script). Script will skip any previously processed documents.
+1. **Offline questions** - previous Web based interface impressive but very slow (approx 3 minutes per question) which is hard to Demo. Modifed the *privateGPT.py* script to include a list of questions at the end that get asked automatically and capture to a logfile.
+1. **Recordingand playback**  - New script *readerGPT.py* plays back the log file at a resonable speed as if the questions were be asked / answered in a reasonable timeframe. Useful for Demos.
+1. **Graph (visualize.py)** - The document store contains valuable information, even without the ChatGPT layer (e.g. "Given this document, find me the 5 closest documents"). Not (yet) as optimised for laptops, many laptops may stuggle to visualise larger datasets
+1. **Comments added to scripts** - mainly to help me understand the ingestion / Q&A process - but hopefully useful for other people
 
 
 # Environment Setup
@@ -93,10 +97,10 @@ If you want to start from an empty database, delete the `db` folder.
 
 Note: during the ingest process no data leaves your local environment. You could ingest without an internet connection, except for the first time you run the ingest script, when the embeddings model is downloaded.
 
-Note: The number of document (chunks) processed during each run is limited to allow for reduced memory. You may need to run the ingest script several times for all your documents to be ingested. Previously ingested documents are ignored during subsequent runs. Search for max_number_of_parts_per_run in the ingest.py script to change this limit.
+Note (Modification): The number of document (chunks) processed during each run is limited to allow for reduced memory. You may need to run the ingest script several times for all your documents to be ingested. Previously ingested documents are ignored during subsequent runs. Search for max_number_of_parts_per_run in the ingest.py script to change this limit.
 
 ## Ask questions to your documents, locally!
-In order to ask a question, run a command like:
+In order to ask a question, edit the list of questions listed at the in of privateGPT.py. Then run the script
 
 ```shell
 python privateGPT.py

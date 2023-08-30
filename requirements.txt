@@ -12,6 +12,9 @@ pandoc>=2.3
 pypandoc>=1.11
 tqdm>=4.65.0
 sentence_transformers
-#chromadb-client
 termcolor
-#chromaviz # or pip install git+https://github.com/mtybadger/chromaviz/
+
+# The following lines cause versioning issues if included in pip - alternative is 
+# pip install git+https://github.com/mtybadger/chromaviz/
+#chromaviz 
+#chromadb-client
