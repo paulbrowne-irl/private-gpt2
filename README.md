@@ -108,6 +108,13 @@ python privateGPT.py
 
 And watch as the for the script asks and captures the answers to your questions. You'll need to wait 1 to 3 minutes per question(depending on your machine) while the LLM model consumes the prompt and prepares the answer. Once done, it will print the answer and the 4 sources it used as context from your documents.
 
+Once you have asked some questions, you no doubt will want to share with colleagues. To replay the session (at a much faster speed), using the logs and with coloured output, run the following output.
+
+```shell
+python readerGPT.py
+```
+
+
 Note: you could turn off your internet connection, and the script inference would still work. No data gets out of your local environment.
 
 
