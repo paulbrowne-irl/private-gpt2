@@ -49,7 +49,7 @@ TARGET_SOURCE_CHUNKS: The amount of chunks (sources) that will be used to answer
 Note: because of the way `langchain` loads the `SentenceTransformers` embeddings, the first time you run the script it will require internet connection to download the embeddings model itself.
 
 ## Test dataset
-This repo uses a [state of the union transcript](https://github.com/imartinez/privateGPT/blob/main/source_documents/state_of_the_union.txt) as an example. Replace this with your own documents and be sure to add to the *.gitignore* file.
+This repo uses a [state of the union transcript](https://github.com/imartinez/privateGPT/blob/main/source_documents/state_of_the_union.txt) as an example. Replace this with your own documents in the *source_documents* and be sure to add to the *.gitignore* file.
 
 ## Instructions for ingesting your own dataset
 
