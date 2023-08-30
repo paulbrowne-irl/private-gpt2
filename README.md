@@ -100,27 +100,15 @@ Note: during the ingest process no data leaves your local environment. You could
 Note (Modification): The number of document (chunks) processed during each run is limited to allow for reduced memory. You may need to run the ingest script several times for all your documents to be ingested. Previously ingested documents are ignored during subsequent runs. Search for max_number_of_parts_per_run in the ingest.py script to change this limit.
 
 ## Ask questions to your documents, locally!
-In order to ask a question, edit the list of questions listed at the in of privateGPT.py. Then run the script
+In order to ask a question, edit the list of questions at the of *privateGPT.py*. Then run the script
 
 ```shell
 python privateGPT.py
 ```
 
-And wait for the script to require your input.
-
-```plaintext
-> Enter a query:
-```
-
-Hit enter. You'll need to wait 20-30 seconds (depending on your machine) while the LLM model consumes the prompt and prepares the answer. Once done, it will print the answer and the 4 sources it used as context from your documents; you can then ask another question without re-running the script, just wait for the prompt again.
+And watch as the for the script asks and captures the answers to your questions. You'll need to wait 1 to 3 minutes per question(depending on your machine) while the LLM model consumes the prompt and prepares the answer. Once done, it will print the answer and the 4 sources it used as context from your documents.
 
 Note: you could turn off your internet connection, and the script inference would still work. No data gets out of your local environment.
-
-Type `exit` to finish the script.
-
-
-### CLI
-The script also supports optional command-line arguments to modify its behavior. You can see a full list of these arguments by running the command ```python privateGPT.py --help``` in your terminal.
 
 
 # How does it work?
